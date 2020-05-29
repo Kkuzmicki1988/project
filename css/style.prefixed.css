@@ -2,8 +2,10 @@
 
 .song {
 	max-width: 35%;
+	display: -ms-flexbox;
 	display: flex;
-	flex-direction: column;
+	-ms-flex-direction: column;
+	    flex-direction: column;
 	transform: translateX(100%);
 
 }

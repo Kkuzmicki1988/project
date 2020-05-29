@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/Kkuzmicki1988/project#readme",
   "devDependencies": {
-    "browser-sync": "^2.26.7"
+    "autoprefixer-cli": "^1.0.0",
+    "browser-sync": "^2.26.7",
+    "html-validate": "^2.23.0",
+    "mkdirp": "^1.0.4"
   }
 }
