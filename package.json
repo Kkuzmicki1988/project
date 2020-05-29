@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Kkuzmicki1988/project/issues"
   },
-  "homepage": "https://github.com/Kkuzmicki1988/project#readme"
+  "homepage": "https://github.com/Kkuzmicki1988/project#readme",
+  "devDependencies": {
+    "browser-sync": "^2.26.7"
+  }
 }
