@@ -1,51 +1,423 @@
-<!DOCTYPE HTML>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="pl">
   <head>
-    <meta charset="utf-8">
-    <title>pierwszy commit</title>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald&family=Tenali+Ramakrishna&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacjenci uciekają | Kamio.digital</title>
+    <style>
+      :root {
+        --bg: #22333b;
+        --light: #fafaff;
+        --accent: #e09f3e;
+        --danger: #ff6b6b;
+        --ok: #7be495;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
+          sans-serif;
+        background: radial-gradient(circle at 20% 20%, #2e4550 0%, var(--bg) 55%);
+        color: var(--light);
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .game-wrap {
+        width: min(1080px, 100%);
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        gap: 12px;
+      }
+
+      .hero {
+        background: rgba(250, 250, 255, 0.06);
+        border: 1px solid rgba(250, 250, 255, 0.2);
+        border-radius: 16px;
+        padding: 20px;
+        backdrop-filter: blur(4px);
+      }
+
+      h1 {
+        margin: 0 0 6px;
+        font-size: clamp(1.5rem, 3vw, 2.3rem);
+      }
+
+      .hero p {
+        margin: 0;
+        opacity: 0.9;
+        line-height: 1.5;
+      }
+
+      .hud {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stat {
+        background: rgba(250, 250, 255, 0.09);
+        border: 1px solid rgba(250, 250, 255, 0.15);
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+
+      .stat small {
+        display: block;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        opacity: 0.72;
+        letter-spacing: 0.08em;
+      }
+
+      .stat strong {
+        display: block;
+        margin-top: 4px;
+        font-size: clamp(1.1rem, 3.5vw, 1.55rem);
+      }
+
+      .board {
+        position: relative;
+        overflow: hidden;
+        border-radius: 18px;
+        min-height: 58vh;
+        border: 2px solid rgba(250, 250, 255, 0.2);
+        background:
+          linear-gradient(120deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
+          repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.04) 0,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px,
+            transparent 24px
+          ),
+          linear-gradient(180deg, #2f4651 0%, #22333b 100%);
+      }
+
+      .clinic-label,
+      .competition-label {
+        position: absolute;
+        top: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 0.82rem;
+        padding: 8px 10px;
+        border-radius: 999px;
+      }
+
+      .clinic-label {
+        left: 12px;
+        background: rgba(123, 228, 149, 0.16);
+        border: 1px solid rgba(123, 228, 149, 0.55);
+      }
+
+      .competition-label {
+        right: 12px;
+        color: var(--danger);
+        background: rgba(255, 107, 107, 0.12);
+        border: 1px solid rgba(255, 107, 107, 0.5);
+      }
+
+      .lane-hint {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        border-top: 2px dashed rgba(255, 255, 255, 0.15);
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+
+      .patient {
+        position: absolute;
+        width: 46px;
+        height: 46px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-size: 1.35rem;
+        border: 1px solid rgba(250, 250, 255, 0.45);
+        background: rgba(250, 250, 255, 0.1);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        transform: translate(-50%, -50%);
+        user-select: none;
+      }
+
+      .patient.stopped {
+        animation: pop 220ms ease;
+      }
+
+      @keyframes pop {
+        from {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+        to {
+          transform: translate(-50%, -50%) scale(1.6);
+          opacity: 0;
+        }
+      }
+
+      .controls {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: none;
+        border-radius: 12px;
+        padding: 14px 18px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .cta {
+        background: var(--accent);
+        color: #1f2428;
+        box-shadow: 0 12px 30px rgba(224, 159, 62, 0.3);
+      }
+
+      .secondary {
+        background: rgba(250, 250, 255, 0.13);
+        color: var(--light);
+        border: 1px solid rgba(250, 250, 255, 0.2);
+      }
+
+      .result {
+        flex: 1;
+        min-width: 250px;
+        background: rgba(250, 250, 255, 0.09);
+        border: 1px solid rgba(250, 250, 255, 0.2);
+        border-radius: 12px;
+        padding: 12px;
+        line-height: 1.45;
+      }
+
+      .result strong {
+        color: var(--accent);
+      }
+
+      @media (max-width: 640px) {
+        .hud {
+          grid-template-columns: 1fr;
+        }
+
+        .board {
+          min-height: 52vh;
+        }
+
+        button,
+        .result {
+          width: 100%;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div class="song"
-      <div>
-        <h1>Numb</h1>
-        <h2> by Linkin Park</h2>
-        <p>I'm tired of being what you want me to be
-  			Feeling so faithless, lost under the surface
-  			I don't know what you're expecting of me
-  			Put under the pressure of walking in your shoes
-  			Caught in the undertow, just caught in the undertow
-  			Every step that I take is another mistake to you
-  			Caught in the undertow, just caught in the undertow</p>
-    		<p>I've become so numb, I can't feel you there
-  			Become so tired, so much more aware
-  			By becoming this all I want to do
-  			Is be more like me and be less like you</p>
-    		<p>Can't you see that you're smothering me?
-  			Holding too tightly, afraid to lose control
-  			'Cause everything that you thought I would be
-  			Has fallen apart right in front of you
-  			Caught in the undertow, just caught in the undertow
-  			Every step that I take is another mistake to you
-  			Caught in the undertow, just caught in the undertow
-  			And every second I waste is more than I can take!</p>
-  	  	<p>I've become so numb, I can't feel you there
-  			Become so tired, so much more aware
-  			By becoming this all I want to do
-  			Is be more like me and be less like you
-  			And I know I may end up failing too</p>
-  	  	<p>And I know I may end up failing too
-  			But I know you were just like me with someone disappointed in you</p>
-  	  	<p>I've become so numb, I can't feel you there
-  			Become so tired, so much more aware
-  			By becoming this all I want to do
-  			Is be more like me and be less like you</p>
-  	  	<p>I've become so numb, I can't feel you there
-  			I'm tired of being what you want me to be
-  			I've become so numb, I can't feel you there
-  			I'm tired of being what you want me to be</p>
-      </div>
-    </div>
+    <main class="game-wrap">
+      <section class="hero">
+        <h1>Pacjenci uciekają</h1>
+        <p>
+          To mini-gra Kamio.digital pokazująca, jak słaba strona kliniki traci zapytania. Klikaj
+          „Umów wizytę”, aby zatrzymać pacjentów, zanim przejdą do konkurencji.
+        </p>
+      </section>
+
+      <section class="hud">
+        <div class="stat"><small>Punkty</small><strong id="score">0</strong></div>
+        <div class="stat"><small>Pozostałe szanse</small><strong id="lives">10</strong></div>
+        <div class="stat"><small>Czas</small><strong id="time">45s</strong></div>
+      </section>
+
+      <section class="board" id="board" aria-label="Plansza gry przedstawiająca stronę kliniki">
+        <div class="clinic-label">Twoja klinika</div>
+        <div class="competition-label">Konkurencja</div>
+        <div class="lane-hint"></div>
+      </section>
+
+      <section class="controls">
+        <button id="ctaBtn" class="cta">Umów wizytę</button>
+        <button id="restartBtn" class="secondary">Zagraj ponownie</button>
+        <div id="result" class="result">
+          Kliknij <strong>Umów wizytę</strong>, aby rozpocząć ratowanie pacjentów.
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const GAME_DURATION = 45;
+        const START_LIVES = 10;
+
+        const board = document.getElementById("board");
+        const scoreEl = document.getElementById("score");
+        const livesEl = document.getElementById("lives");
+        const timeEl = document.getElementById("time");
+        const resultEl = document.getElementById("result");
+        const ctaBtn = document.getElementById("ctaBtn");
+        const restartBtn = document.getElementById("restartBtn");
+
+        let gameActive = false;
+        let score = 0;
+        let lives = START_LIVES;
+        let timeLeft = GAME_DURATION;
+        let patients = [];
+        let spawnTimer;
+        let gameTimer;
+        let animationFrame;
+
+        const random = (min, max) => Math.random() * (max - min) + min;
+
+        function updateHud() {
+          scoreEl.textContent = String(score);
+          livesEl.textContent = String(lives);
+          timeEl.textContent = `${timeLeft}s`;
+        }
+
+        function clearPatients() {
+          patients.forEach((p) => p.el.remove());
+          patients = [];
+        }
+
+        function resetGameState() {
+          gameActive = false;
+          score = 0;
+          lives = START_LIVES;
+          timeLeft = GAME_DURATION;
+          clearInterval(spawnTimer);
+          clearInterval(gameTimer);
+          cancelAnimationFrame(animationFrame);
+          clearPatients();
+          updateHud();
+        }
+
+        function startGame() {
+          if (gameActive) return;
+
+          resetGameState();
+          gameActive = true;
+          resultEl.innerHTML =
+            "Ratuj leady! Każde kliknięcie <strong>Umów wizytę</strong> zatrzymuje jednego pacjenta.";
+
+          spawnTimer = setInterval(spawnPatient, 720);
+          gameTimer = setInterval(() => {
+            timeLeft -= 1;
+            updateHud();
+            if (timeLeft <= 0 || lives <= 0) endGame();
+          }, 1000);
+
+          animate();
+        }
+
+        function endGame() {
+          if (!gameActive) return;
+          gameActive = false;
+          clearInterval(spawnTimer);
+          clearInterval(gameTimer);
+          cancelAnimationFrame(animationFrame);
+
+          const totalPotential = score + (START_LIVES - lives);
+          const efficiency = totalPotential > 0 ? Math.round((score / totalPotential) * 100) : 0;
+          const message =
+            efficiency >= 70
+              ? "Świetna reakcja — Twoje CTA działa szybko i skutecznie."
+              : "Pacjenci odpływają, gdy decyzja jest zbyt trudna."
+
+          resultEl.innerHTML = `
+            <strong>Wynik: ${score} zatrzymanych pacjentów.</strong><br>
+            Utracone szanse: ${START_LIVES - lives}. Skuteczność: ${efficiency}%.<br>
+            ${message}<br>
+            <strong>Sprzedażowo:</strong> Kamio.digital projektuje strony klinik, które zamieniają ruch w wizyty — nie w straty.
+          `;
+        }
+
+        function spawnPatient() {
+          if (!gameActive) return;
+
+          const rect = board.getBoundingClientRect();
+          const patient = document.createElement("div");
+          patient.className = "patient";
+          patient.textContent = "🧑";
+
+          const y = random(64, rect.height - 24);
+          const data = {
+            id: `${Date.now()}-${Math.random()}`,
+            x: random(14, 30),
+            y,
+            speed: random(0.23, 0.52),
+            el: patient
+          };
+
+          patient.style.left = `${data.x}%`;
+          patient.style.top = `${data.y}px`;
+
+          board.appendChild(patient);
+          patients.push(data);
+        }
+
+        function stopClosestPatient() {
+          if (!gameActive || patients.length === 0) return;
+
+          let closestIndex = 0;
+          for (let i = 1; i < patients.length; i += 1) {
+            if (patients[i].x > patients[closestIndex].x) {
+              closestIndex = i;
+            }
+          }
+
+          const [caught] = patients.splice(closestIndex, 1);
+          score += 1;
+          updateHud();
+
+          caught.el.classList.add("stopped");
+          setTimeout(() => caught.el.remove(), 180);
+        }
+
+        function animate() {
+          if (!gameActive) return;
+
+          for (let i = patients.length - 1; i >= 0; i -= 1) {
+            const p = patients[i];
+            p.x += p.speed;
+            p.el.style.left = `${p.x}%`;
+
+            if (p.x >= 92) {
+              p.el.remove();
+              patients.splice(i, 1);
+              lives -= 1;
+              updateHud();
+              if (lives <= 0) {
+                endGame();
+                return;
+              }
+            }
+          }
+
+          animationFrame = requestAnimationFrame(animate);
+        }
+
+        ctaBtn.addEventListener("click", () => {
+          if (!gameActive) startGame();
+          stopClosestPatient();
+        });
+
+        restartBtn.addEventListener("click", () => {
+          resetGameState();
+          resultEl.innerHTML =
+            "Nowa runda gotowa. Kliknij <strong>Umów wizytę</strong>, żeby wystartować.";
+        });
+
+        updateHud();
+      })();
+    </script>
   </body>
 </html>
