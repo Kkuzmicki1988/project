@@ -3,421 +3,64 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pacjenci uciekają | Kamio.digital</title>
+    <title>Kamio.digital — Strony dla gabinetów</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&display=swap" rel="stylesheet" />
     <style>
-      :root {
-        --bg: #22333b;
-        --light: #fafaff;
-        --accent: #e09f3e;
-        --danger: #ff6b6b;
-        --ok: #7be495;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
-          sans-serif;
-        background: radial-gradient(circle at 20% 20%, #2e4550 0%, var(--bg) 55%);
-        color: var(--light);
-        display: flex;
-        justify-content: center;
-        padding: 16px;
-      }
-
-      .game-wrap {
-        width: min(1080px, 100%);
-        display: grid;
-        grid-template-rows: auto auto 1fr auto;
-        gap: 12px;
-      }
-
-      .hero {
-        background: rgba(250, 250, 255, 0.06);
-        border: 1px solid rgba(250, 250, 255, 0.2);
-        border-radius: 16px;
-        padding: 20px;
-        backdrop-filter: blur(4px);
-      }
-
-      h1 {
-        margin: 0 0 6px;
-        font-size: clamp(1.5rem, 3vw, 2.3rem);
-      }
-
-      .hero p {
-        margin: 0;
-        opacity: 0.9;
-        line-height: 1.5;
-      }
-
-      .hud {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .stat {
-        background: rgba(250, 250, 255, 0.09);
-        border: 1px solid rgba(250, 250, 255, 0.15);
-        border-radius: 12px;
-        padding: 10px 12px;
-      }
-
-      .stat small {
-        display: block;
-        font-size: 0.72rem;
-        text-transform: uppercase;
-        opacity: 0.72;
-        letter-spacing: 0.08em;
-      }
-
-      .stat strong {
-        display: block;
-        margin-top: 4px;
-        font-size: clamp(1.1rem, 3.5vw, 1.55rem);
-      }
-
-      .board {
-        position: relative;
-        overflow: hidden;
-        border-radius: 18px;
-        min-height: 58vh;
-        border: 2px solid rgba(250, 250, 255, 0.2);
-        background:
-          linear-gradient(120deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
-          repeating-linear-gradient(
-            0deg,
-            rgba(255, 255, 255, 0.04) 0,
-            rgba(255, 255, 255, 0.04) 1px,
-            transparent 1px,
-            transparent 24px
-          ),
-          linear-gradient(180deg, #2f4651 0%, #22333b 100%);
-      }
-
-      .clinic-label,
-      .competition-label {
-        position: absolute;
-        top: 12px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        font-size: 0.82rem;
-        padding: 8px 10px;
-        border-radius: 999px;
-      }
-
-      .clinic-label {
-        left: 12px;
-        background: rgba(123, 228, 149, 0.16);
-        border: 1px solid rgba(123, 228, 149, 0.55);
-      }
-
-      .competition-label {
-        right: 12px;
-        color: var(--danger);
-        background: rgba(255, 107, 107, 0.12);
-        border: 1px solid rgba(255, 107, 107, 0.5);
-      }
-
-      .lane-hint {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        right: 0;
-        border-top: 2px dashed rgba(255, 255, 255, 0.15);
-        transform: translateY(-50%);
-        pointer-events: none;
-      }
-
-      .patient {
-        position: absolute;
-        width: 46px;
-        height: 46px;
-        border-radius: 50%;
-        display: grid;
-        place-items: center;
-        font-size: 1.35rem;
-        border: 1px solid rgba(250, 250, 255, 0.45);
-        background: rgba(250, 250, 255, 0.1);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-        transform: translate(-50%, -50%);
-        user-select: none;
-      }
-
-      .patient.stopped {
-        animation: pop 220ms ease;
-      }
-
-      @keyframes pop {
-        from {
-          transform: translate(-50%, -50%) scale(1);
-          opacity: 1;
-        }
-        to {
-          transform: translate(-50%, -50%) scale(1.6);
-          opacity: 0;
-        }
-      }
-
-      .controls {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      button {
-        border: none;
-        border-radius: 12px;
-        padding: 14px 18px;
-        font-size: 1rem;
-        font-weight: 700;
-        cursor: pointer;
-      }
-
-      .cta {
-        background: var(--accent);
-        color: #1f2428;
-        box-shadow: 0 12px 30px rgba(224, 159, 62, 0.3);
-      }
-
-      .secondary {
-        background: rgba(250, 250, 255, 0.13);
-        color: var(--light);
-        border: 1px solid rgba(250, 250, 255, 0.2);
-      }
-
-      .result {
-        flex: 1;
-        min-width: 250px;
-        background: rgba(250, 250, 255, 0.09);
-        border: 1px solid rgba(250, 250, 255, 0.2);
-        border-radius: 12px;
-        padding: 12px;
-        line-height: 1.45;
-      }
-
-      .result strong {
-        color: var(--accent);
-      }
-
-      @media (max-width: 640px) {
-        .hud {
-          grid-template-columns: 1fr;
-        }
-
-        .board {
-          min-height: 52vh;
-        }
-
-        button,
-        .result {
-          width: 100%;
-        }
-      }
+      :root { --orange:#F97316; --navy:#1e293b; --white:#fff; --gray:#f8fafc; --text:#1f2937; --muted:#6b7280; --radius:14px; --shadow:0 14px 40px rgba(30,41,59,.12);} *{box-sizing:border-box}
+      html{scroll-behavior:smooth} body{margin:0;font-family:Inter,sans-serif;color:var(--text);background:var(--white);line-height:1.6}
+      .container{width:min(1200px,calc(100% - 2rem));margin:0 auto}
+      section{padding:88px 0}.alt{background:var(--gray)} .dark{background:var(--navy);color:#f1f5f9}
+      h1,h2,h3{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.15;margin:0 0 16px;color:#1f3142} .dark h1,.dark h2,.dark h3{color:#f8fafc}
+      h1{font-size:clamp(2.2rem,5vw,4rem)}h2{font-size:clamp(1.8rem,3.5vw,3rem)}h3{font-size:clamp(1.35rem,2.4vw,2rem)} p{margin:0 0 12px}
+      .btn{display:inline-flex;align-items:center;justify-content:center;padding:15px 28px;border-radius:12px;font-weight:700;text-decoration:none;transition:.25s transform,.25s box-shadow,.25s background}
+      .btn-primary{background:var(--orange);color:#fff;box-shadow:0 10px 28px rgba(249,115,22,.35)} .btn-primary:hover{transform:translateY(-2px);box-shadow:0 15px 34px rgba(249,115,22,.45)}
+      .top{position:sticky;top:0;background:#ffffffea;backdrop-filter:blur(8px);border-bottom:1px solid #e5e7eb;z-index:20}.top .container{display:flex;align-items:center;justify-content:space-between;padding:14px 0}.brand{font-weight:800;color:var(--orange);font-size:1.75rem}
+      .hero{padding-top:120px;background:radial-gradient(circle at 80% 20%, rgba(249,115,22,.12), transparent 45%),linear-gradient(180deg,#fff,#f8fafc)} .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+      .hero-card{background:#fff;border-radius:16px;padding:16px;box-shadow:var(--shadow)} .hero-card img{width:100%;height:560px;object-fit:cover;border-radius:12px}
+      .kpi{font-size:1rem;color:var(--muted);margin-top:14px}
+      .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.card{background:#fff;border:1px solid #e5e7eb;border-radius:var(--radius);padding:28px;box-shadow:0 6px 24px rgba(30,41,59,.08);transition:.2s}.card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+      .process{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+      .steps .step{background:#fff;border-radius:var(--radius);padding:20px 24px;border:1px solid #e2e8f0;margin-bottom:14px}
+      .case-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.case{background:#fff;border:1px solid #dbe3ec;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)} .case h3{padding:20px 20px 0} .case p{padding:0 20px 20px} .case img{display:block;width:100%;height:300px;object-fit:cover;border-top:1px solid #e5e7eb}
+      .testimonials{display:grid;grid-template-columns:1fr 1fr;gap:22px}.quote{background:#fff;color:#1f2937;border-radius:16px;padding:28px;border:1px solid #e2e8f0;box-shadow:var(--shadow)}
+      .form-wrap{background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:30px;box-shadow:var(--shadow)} .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px} input,textarea{width:100%;padding:14px 16px;border:1px solid #cbd5e1;border-radius:12px;font:inherit} input:focus,textarea:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 4px rgba(249,115,22,.14)} textarea{min-height:132px;grid-column:1/-1}
+      .reveal{opacity:0;transform:translateY(20px);transition:.6s ease}.reveal.in{opacity:1;transform:none}
+      @media (max-width: 900px){section{padding:72px 0}.hero-grid,.process,.case-grid,.testimonials,.form-grid,.cards{grid-template-columns:1fr}.hero-card img{height:420px}}
+      @media (max-width: 375px){.container{width:calc(100% - 1.25rem)}h1{font-size:2rem}.btn{width:100%}}
     </style>
   </head>
   <body>
-    <main class="game-wrap">
-      <section class="hero">
-        <h1>Pacjenci uciekają</h1>
-        <p>
-          To mini-gra Kamio.digital pokazująca, jak słaba strona kliniki traci zapytania. Klikaj
-          „Umów wizytę”, aby zatrzymać pacjentów, zanim przejdą do konkurencji.
-        </p>
-      </section>
+    <header class="top"><div class="container"><div class="brand">Kamio.digital</div><a class="btn btn-primary" href="#analiza">Sprawdź stronę</a></div></header>
 
-      <section class="hud">
-        <div class="stat"><small>Punkty</small><strong id="score">0</strong></div>
-        <div class="stat"><small>Pozostałe szanse</small><strong id="lives">10</strong></div>
-        <div class="stat"><small>Czas</small><strong id="time">45s</strong></div>
-      </section>
-
-      <section class="board" id="board" aria-label="Plansza gry przedstawiająca stronę kliniki">
-        <div class="clinic-label">Twoja klinika</div>
-        <div class="competition-label">Konkurencja</div>
-        <div class="lane-hint"></div>
-      </section>
-
-      <section class="controls">
-        <button id="ctaBtn" class="cta">Umów wizytę</button>
-        <button id="restartBtn" class="secondary">Zagraj ponownie</button>
-        <div id="result" class="result">
-          Kliknij <strong>Umów wizytę</strong>, aby rozpocząć ratowanie pacjentów.
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="reveal">
+          <h1>Masz stronę, ale nie masz <span style="color:#F97316">zapytań</span> od pacjentów?</h1>
+          <p>Tworzę strony dla gabinetów, które zamieniają wejścia z Google w realne wizyty i pomagają wypełnić wolne terminy.</p>
+          <p style="margin:24px 0 8px"><a class="btn btn-primary" href="#analiza">Zobacz, co blokuje pacjentów</a></p>
+          <p class="kpi">Bezpłatna analiza · 10–15 minut · konkretne wskazówki</p>
         </div>
-      </section>
-    </main>
+        <div class="hero-card reveal"><img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=1200&auto=format&fit=crop" alt="Właściciel gabinetu" /></div>
+      </div>
+    </section>
+
+    <section class="alt"><div class="container"><h2 class="reveal" style="text-align:center;margin-bottom:34px">Dlaczego Twoja strona nie daje zapytań</h2><div class="cards"><article class="card reveal"><h3>Pacjenci trafiają, ale nie zostają na stronie</h3><p>Nawet jeśli ktoś znajdzie Twoją stronę, nie rozumie oferty i szybko ją opuszcza.</p></article><article class="card reveal"><h3>Strona nie prowadzi do wizyty</h3><p>Brakuje jasnej ścieżki: co zrobić i gdzie kliknąć. Pacjent nie podejmuje żadnej decyzji.</p></article><article class="card reveal"><h3>Ruch nie zamienia się w zapytania</h3><p>Możesz mieć wejścia z Google, ale bez dobrej struktury nie ma kontaktów.</p></article></div></div></section>
+
+    <section class="dark"><div class="container process"><img class="reveal" style="width:100%;border-radius:16px;box-shadow:var(--shadow)" src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=1200&auto=format&fit=crop" alt="Pacjent i lekarz"/><div class="steps"><h2 class="reveal">Jak Twoja strona zaczyna przynosić zapytania</h2><div class="step reveal"><h3>01. Pacjent rozumie, gdzie trafił</h3><p>Pacjent od razu widzi, że to miejsce dla niego i rozumie ofertę.</p></div><div class="step reveal"><h3>02. Wie, co zrobić dalej</h3><p>Strona prowadzi go krok po kroku — bez zgadywania co zrobić.</p></div><div class="step reveal"><h3>03. Umawia wizytę</h3><p>Dostaje jasny powód i prosty sposób, żeby się umówić.</p></div></div></div></section>
+
+    <section><div class="container"><h2 class="reveal" style="text-align:center">Przykład realizacji</h2><p class="reveal" style="text-align:center;color:var(--muted);margin-bottom:28px">Zobacz, jak wygląda efekt uporządkowania strony i komunikacji.</p><div class="case-grid"><article class="case reveal"><h3>Na początku</h3><p>Firma działała głównie z poleceń i nie miała stałego napływu klientów. Brakowało widoczności w Google i systemu pozyskiwania zapytań.</p><img src="https://images.unsplash.com/photo-1521790797524-b2497295b8a0?q=80&w=1200&auto=format&fit=crop" alt="Przed"/></article><article class="case reveal"><h3>Efekt po wdrożeniu</h3><p>Zaprojektowałem stronę od podstaw, skupioną na jednym celu — pozyskiwaniu zapytań. Uprościłem komunikację i dodałem konkretne CTA.</p><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop" alt="Po"/></article></div></div></section>
+
+    <section class="alt"><div class="container"><h2 style="text-align:center" class="reveal">Zadowoleni klienci</h2><div class="testimonials"><article class="quote reveal"><p>„Potrzebowałem strony, która pokaże firmę profesjonalnie i zachęci klientów do kontaktu.”</p><strong>Prohomers Sprzedaż</strong></article><article class="quote reveal"><p>„Bardzo dobre podejście do współpracy — wszystko jasno wytłumaczone i uporządkowane.”</p><strong>Adam naprawia Usługi</strong></article></div></div></section>
+
+    <section id="analiza" class="alt"><div class="container"><div class="form-wrap reveal"><h2>Sprawdź co blokuje Twoich pacjentów — bezpłatna analiza</h2><div class="form-grid"><input placeholder="Imię i nazwisko"/><input placeholder="Numer telefonu"/><input placeholder="Adres e-mail"/><input placeholder="Adres strony"/><textarea placeholder="Komentarz lub wiadomość"></textarea></div><p style="margin-top:20px"><a class="btn btn-primary" href="#">Umów bezpłatną analizę</a></p></div></div></section>
+
+    <footer class="dark" style="padding:60px 0"><div class="container" style="text-align:center"><h2 style="margin-bottom:8px">Kamio.digital</h2><p>Strony dla gabinetów, które pomagają zdobywać nowych pacjentów i wypełniać wolne terminy.</p><p style="margin-top:18px"><a href="#analiza" class="btn btn-primary">Sprawdź swoją stronę</a></p><p style="opacity:.8;margin-top:24px">© 2026 Kamio.digital — Strony dla gabinetów</p></div></footer>
 
     <script>
-      (() => {
-        const GAME_DURATION = 45;
-        const START_LIVES = 10;
-
-        const board = document.getElementById("board");
-        const scoreEl = document.getElementById("score");
-        const livesEl = document.getElementById("lives");
-        const timeEl = document.getElementById("time");
-        const resultEl = document.getElementById("result");
-        const ctaBtn = document.getElementById("ctaBtn");
-        const restartBtn = document.getElementById("restartBtn");
-
-        let gameActive = false;
-        let score = 0;
-        let lives = START_LIVES;
-        let timeLeft = GAME_DURATION;
-        let patients = [];
-        let spawnTimer;
-        let gameTimer;
-        let animationFrame;
-
-        const random = (min, max) => Math.random() * (max - min) + min;
-
-        function updateHud() {
-          scoreEl.textContent = String(score);
-          livesEl.textContent = String(lives);
-          timeEl.textContent = `${timeLeft}s`;
-        }
-
-        function clearPatients() {
-          patients.forEach((p) => p.el.remove());
-          patients = [];
-        }
-
-        function resetGameState() {
-          gameActive = false;
-          score = 0;
-          lives = START_LIVES;
-          timeLeft = GAME_DURATION;
-          clearInterval(spawnTimer);
-          clearInterval(gameTimer);
-          cancelAnimationFrame(animationFrame);
-          clearPatients();
-          updateHud();
-        }
-
-        function startGame() {
-          if (gameActive) return;
-
-          resetGameState();
-          gameActive = true;
-          resultEl.innerHTML =
-            "Ratuj leady! Każde kliknięcie <strong>Umów wizytę</strong> zatrzymuje jednego pacjenta.";
-
-          spawnTimer = setInterval(spawnPatient, 720);
-          gameTimer = setInterval(() => {
-            timeLeft -= 1;
-            updateHud();
-            if (timeLeft <= 0 || lives <= 0) endGame();
-          }, 1000);
-
-          animate();
-        }
-
-        function endGame() {
-          if (!gameActive) return;
-          gameActive = false;
-          clearInterval(spawnTimer);
-          clearInterval(gameTimer);
-          cancelAnimationFrame(animationFrame);
-
-          const totalPotential = score + (START_LIVES - lives);
-          const efficiency = totalPotential > 0 ? Math.round((score / totalPotential) * 100) : 0;
-          const message =
-            efficiency >= 70
-              ? "Świetna reakcja — Twoje CTA działa szybko i skutecznie."
-              : "Pacjenci odpływają, gdy decyzja jest zbyt trudna."
-
-          resultEl.innerHTML = `
-            <strong>Wynik: ${score} zatrzymanych pacjentów.</strong><br>
-            Utracone szanse: ${START_LIVES - lives}. Skuteczność: ${efficiency}%.<br>
-            ${message}<br>
-            <strong>Sprzedażowo:</strong> Kamio.digital projektuje strony klinik, które zamieniają ruch w wizyty — nie w straty.
-          `;
-        }
-
-        function spawnPatient() {
-          if (!gameActive) return;
-
-          const rect = board.getBoundingClientRect();
-          const patient = document.createElement("div");
-          patient.className = "patient";
-          patient.textContent = "🧑";
-
-          const y = random(64, rect.height - 24);
-          const data = {
-            id: `${Date.now()}-${Math.random()}`,
-            x: random(14, 30),
-            y,
-            speed: random(0.23, 0.52),
-            el: patient
-          };
-
-          patient.style.left = `${data.x}%`;
-          patient.style.top = `${data.y}px`;
-
-          board.appendChild(patient);
-          patients.push(data);
-        }
-
-        function stopClosestPatient() {
-          if (!gameActive || patients.length === 0) return;
-
-          let closestIndex = 0;
-          for (let i = 1; i < patients.length; i += 1) {
-            if (patients[i].x > patients[closestIndex].x) {
-              closestIndex = i;
-            }
-          }
-
-          const [caught] = patients.splice(closestIndex, 1);
-          score += 1;
-          updateHud();
-
-          caught.el.classList.add("stopped");
-          setTimeout(() => caught.el.remove(), 180);
-        }
-
-        function animate() {
-          if (!gameActive) return;
-
-          for (let i = patients.length - 1; i >= 0; i -= 1) {
-            const p = patients[i];
-            p.x += p.speed;
-            p.el.style.left = `${p.x}%`;
-
-            if (p.x >= 92) {
-              p.el.remove();
-              patients.splice(i, 1);
-              lives -= 1;
-              updateHud();
-              if (lives <= 0) {
-                endGame();
-                return;
-              }
-            }
-          }
-
-          animationFrame = requestAnimationFrame(animate);
-        }
-
-        ctaBtn.addEventListener("click", () => {
-          if (!gameActive) startGame();
-          stopClosestPatient();
-        });
-
-        restartBtn.addEventListener("click", () => {
-          resetGameState();
-          resultEl.innerHTML =
-            "Nowa runda gotowa. Kliknij <strong>Umów wizytę</strong>, żeby wystartować.";
-        });
-
-        updateHud();
-      })();
+      const io = new IntersectionObserver((entries)=>{entries.forEach((e)=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+      document.querySelectorAll('.reveal').forEach((el)=>io.observe(el));
     </script>
   </body>
 </html>
